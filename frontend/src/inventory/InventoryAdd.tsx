@@ -17,7 +17,11 @@ import { useRef, useState } from "react";
 import { nanoid } from "nanoid";
 import toast from "react-hot-toast";
 
-export function InventoryAdd() {
+interface Props {
+  refresh: () => void;
+}
+
+export function InventoryAdd({ refresh }: Props) {
   const [formValues, setFormValues] = useState<IInventory>({} as IInventory);
   const [loading, setLoading] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
@@ -41,6 +45,7 @@ export function InventoryAdd() {
           position: "top-right",
         });
         resetForm();
+        refresh();
       })
       .catch(() => {
         toast("Adding item failed", {
