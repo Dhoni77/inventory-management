@@ -161,6 +161,6 @@ Example Body:
     "category": "grocery",
     "description": "",
     "price": 40,
-    "quanity": 70
+    "quantity": 70
 }
 ```
