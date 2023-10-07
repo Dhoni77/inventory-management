@@ -1,8 +1,7 @@
 import { IInventory } from "@/models/IInventory";
-import { API_URL } from "..";
 
 export async function addItem(item: IInventory): Promise<void> {
-    const response = await fetch(`${API_URL}/items`, {
+    const response = await fetch(`api/items`, {
         method: 'POST',
         body: JSON.stringify(item),
         headers: {
