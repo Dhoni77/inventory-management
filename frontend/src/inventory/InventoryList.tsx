@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/table";
 import { IInventory } from "@/models/IInventory";
 import { useEffect, useState } from "react";
+import { InventoryAdd } from "./InventoryAdd";
 
 interface IState {
   loading: boolean;
@@ -24,11 +25,15 @@ export function InventoryList() {
     items: [],
   });
 
+  const [refresh, setRefresh] = useState(false);
+
   useEffect(() => {
     getItems()
       .then((data) => setState({ loading: false, items: data }))
       .catch(() => setState({ loading: false, items: [] }));
-  }, []);
+  }, [refresh]);
+
+  const handleRefresh = () => setRefresh((prev) => !prev);
 
   return (
     <>
@@ -87,6 +92,7 @@ export function InventoryList() {
           <Label className="text-red-500">No Items found.</Label>
         </div>
       )}
+      <InventoryAdd refresh={handleRefresh}></InventoryAdd>
     </>
   );
 }
