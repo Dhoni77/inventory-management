@@ -1,4 +1,4 @@
-import { getItems } from "@/api/items/get";
+import { getDiscounts } from "@/api/discounts/get";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -10,44 +10,27 @@ import {
   TableBody,
   TableCell,
 } from "@/components/ui/table";
-import { IInventory } from "@/models/IInventory";
 import { useEffect, useState } from "react";
-import { InventoryAdd } from "./InventoryAdd";
 import { IDiscount } from "@/models/IDiscount";
-import { getDiscounts } from "@/api/discounts/get";
+import { DiscountAdd } from "./DiscountAdd";
 
 interface IState {
   loading: boolean;
-  items: IInventory[];
+  items: IDiscount[];
 }
 
-function calcDiscount(originalPrice: number, discountPercent: number) {
-  return originalPrice - (originalPrice * discountPercent) / 100;
-}
-
-export function InventoryList() {
+export function DiscountList() {
   const [state, setState] = useState<IState>({
     loading: true,
     items: [],
   });
 
-  const [discounts, setDiscounts] = useState(null);
-
   const [refresh, setRefresh] = useState(false);
 
   useEffect(() => {
-    getItems()
+    getDiscounts()
       .then((data) => setState({ loading: false, items: data }))
       .catch(() => setState({ loading: false, items: [] }));
-    getDiscounts()
-      .then((data: IDiscount[]) => {
-        const obj: Record<string, number> = {};
-        data.forEach((d) => {
-          obj[d.category] = +d.discountedPrice;
-        });
-        setDiscounts(obj);
-      })
-      .catch(() => setState(null));
   }, [refresh]);
 
   const handleRefresh = () => setRefresh((prev) => !prev);
@@ -57,30 +40,22 @@ export function InventoryList() {
       {state.loading && (
         <Skeleton>
           <div className="text-lg font-sans text-green-600 bg-zinc-200 rounded">
-            Loading items...
+            Loading discounts...
           </div>
         </Skeleton>
       )}
       {!state.loading && state.items?.length > 0 && (
         <Table className="border-collapse w-full">
           <TableCaption className="text-center bg-blue-400 text-white py-2">
-            Inventory Details
+            Discount Details
           </TableCaption>
           <TableHeader className="bg-yellow-500 text-white">
             <TableRow>
-              <TableHead className="px-4 py-2 text-zinc-100">Name</TableHead>
               <TableHead className="px-4 py-2 text-zinc-100">
                 Category
               </TableHead>
-              <TableHead className="px-4 py-2 text-zinc-100">Price</TableHead>
               <TableHead className="px-4 py-2 text-zinc-100">
-                Discounted Price
-              </TableHead>
-              <TableHead className="px-4 py-2 text-zinc-100">
-                Quantity
-              </TableHead>
-              <TableHead className="px-4 py-2 text-zinc-100">
-                Description
+                Discount %
               </TableHead>
             </TableRow>
           </TableHeader>
@@ -88,24 +63,10 @@ export function InventoryList() {
             {state.items.map((item) => (
               <TableRow key={item.id}>
                 <TableCell className="px-4 py-2 text-left">
-                  {item.name}
-                </TableCell>
-                <TableCell className="px-4 py-2 text-left">
                   {item.category}
                 </TableCell>
                 <TableCell className="px-4 py-2 text-left">
-                  {item.price}
-                </TableCell>
-                <TableCell className="px-4 py-2 text-left">
-                  {discounts[item.category]
-                    ? calcDiscount(item.price, discounts[item.category])
-                    : ""}
-                </TableCell>
-                <TableCell className="px-4 py-2 text-left">
-                  {item.quantity}
-                </TableCell>
-                <TableCell className="px-4 py-2 text-left">
-                  {item.description}
+                  {`${item.discountedPrice} %`}
                 </TableCell>
               </TableRow>
             ))}
@@ -114,10 +75,10 @@ export function InventoryList() {
       )}
       {!state.loading && !state.items.length && (
         <div>
-          <Label className="text-red-500">No Items found.</Label>
+          <Label className="text-red-500">No Discounts found.</Label>
         </div>
       )}
-      <InventoryAdd refresh={handleRefresh}></InventoryAdd>
+      <DiscountAdd refresh={handleRefresh}></DiscountAdd>
     </>
   );
 }
